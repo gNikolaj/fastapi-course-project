@@ -56,6 +56,32 @@ Copy `.env.example` to `.env` and fill in the values:
 cp .env.example .env
 ```
 
+## Docker
+
+### Requirements
+
+- Docker Desktop
+
+### Build
+
+```bash
+cd backend
+docker build -t fastapi-app .
+```
+
+### Run
+
+```bash
+docker run -p 8000:8000 fastapi-app
+```
+
+or
+
+```bash
+make docker-build
+make docker-run
+```
+
 ## Frontend
 
 ### Requirements
