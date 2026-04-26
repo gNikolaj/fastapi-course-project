@@ -1,5 +1,8 @@
+include .env
+export
+
 run:
-	uvicorn main:app --reload
+	python -m app.main
 
 test:
 	pytest
