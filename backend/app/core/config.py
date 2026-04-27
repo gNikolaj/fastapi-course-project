@@ -6,6 +6,11 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
     APP_RELOAD: bool = True
 
+    CORS_ORIGINS: list = ["*"]
+    CORS_METHODS: list = ["*"]
+    CORS_HEADERS: list = ["*"]
+    CORS_CREDENTIALS: bool = True
+
     class Config:
         env_file = ".env"
 
