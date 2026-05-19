@@ -1,11 +1,23 @@
 import uvicorn
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.routes.status import status_router
+from app.db.redis import connect_redis, disconnect_redis
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_):
+    await connect_redis()
+
+    yield
+
+    await disconnect_redis()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
