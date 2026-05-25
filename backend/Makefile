@@ -7,6 +7,14 @@ run:
 test:
 	pytest
 
+services-start:
+	brew services start postgresql@17
+	brew services start redis
+
+services-stop:
+	brew services stop postgresql@17
+	brew services stop redis
+
 docker-build:
 	docker build -t fastapi-app .
 

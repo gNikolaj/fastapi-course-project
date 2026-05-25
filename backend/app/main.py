@@ -4,17 +4,17 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.db.redis import redis_client
 from app.routes.status import status_router
-from app.db.redis import connect_redis, disconnect_redis
 
 
 @asynccontextmanager
 async def lifespan(_):
-    await connect_redis()
+    await redis_client.connect()
 
     yield
 
-    await disconnect_redis()
+    await redis_client.disconnect()
 
 
 app = FastAPI(lifespan=lifespan)
