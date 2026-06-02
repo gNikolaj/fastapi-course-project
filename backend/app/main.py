@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.logger import logger
+from app.core.logger import log
 from app.core.config import settings
 from app.db.redis import redis_client
 from app.routes.status import status_router
@@ -11,13 +11,13 @@ from app.routes.status import status_router
 
 @asynccontextmanager
 async def lifespan(_):
-    logger.info("Connecting to Redis...")
+    log("Connecting to Redis...")
     await redis_client.connect()
-    logger.info("Redis connected")
+    log("Redis connected")
     yield
-    logger.info("Disconnecting from Redis...")
+    log("Disconnecting from Redis...")
     await redis_client.disconnect()
-    logger.info("Redis disconnected")
+    log("Redis disconnected")
 
 
 app = FastAPI(lifespan=lifespan)

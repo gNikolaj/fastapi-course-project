@@ -1,9 +1,11 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, field_validator
+
+from app.utils.validators import validate_email
 
 
 class User(BaseModel):
     id: int
-    email: EmailStr
+    email: str
     is_active: bool
 
     class Config:
@@ -11,24 +13,41 @@ class User(BaseModel):
 
 
 class SignInRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def email_validator(cls, value: str) -> str:
+        return validate_email(value)
 
 
 class SignUpRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def email_validator(cls, value: str) -> str:
+        return validate_email(value)
 
 
 class UserUpdate(BaseModel):
-    email: EmailStr | None = None
+    email: str | None = None
     password: str | None = None
     is_active: bool | None = None
+
+    @field_validator("email")
+    @classmethod
+    def email_validator(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        return validate_email(value)
 
 
 class UserDetail(BaseModel):
     id: int
-    email: EmailStr
+    email: str
     is_active: bool
 
     class Config:
@@ -38,3 +57,5 @@ class UserDetail(BaseModel):
 class UsersList(BaseModel):
     users: list[UserDetail]
     total: int
+    offset: int
+    limit: int

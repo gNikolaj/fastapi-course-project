@@ -6,9 +6,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.postgres import get_db
-from app.core.logger import logger
 from app.db.redis import redis_client
+from app.core.logger import get_logger
 
+logger = get_logger()
 status_router = APIRouter()
 
 
