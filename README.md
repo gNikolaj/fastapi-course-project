@@ -82,6 +82,42 @@ make docker-build
 make docker-run
 ```
 
+## Database Migrations
+
+### Requirements
+
+- PostgreSQL running locally or via Docker
+
+### Initialize migrations (already done)
+
+```bash
+alembic init migrations
+```
+
+### Create a new migration
+
+```bash
+alembic revision --autogenerate -m "description"
+```
+
+### Apply migrations
+
+```bash
+alembic upgrade head
+```
+
+### Rollback last migration
+
+```bash
+alembic downgrade -1
+```
+
+### Check current migration version
+
+```bash
+alembic current
+```
+
 ## Frontend
 
 ### Requirements

@@ -1,8 +1,11 @@
 from sqlalchemy import text
 from redis.asyncio import Redis
 from fastapi import APIRouter, Depends
+from redis.exceptions import RedisError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logger import log
 from app.db.postgres import get_db
 from app.db.redis import redis_client
 
@@ -25,7 +28,8 @@ async def postgres_status_check(
     try:
         await db.execute(text("SELECT 1"))
         postgres_status = "ok"
-    except Exception:
+    except SQLAlchemyError as e:
+        log(f"PostgresSQL connection error: {e}")
         postgres_status = "error"
 
     return {
@@ -40,10 +44,10 @@ async def redis_status_check(
     try:
         await redis.ping()
         redis_status = "ok"
-    except Exception:
+    except RedisError as e:
+        log(f"Redis connection error: {e}")
         redis_status = "error"
 
     return {
         "redis": redis_status,
-
     }

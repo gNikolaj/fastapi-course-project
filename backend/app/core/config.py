@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
     APP_RELOAD: bool = True
 
+    FULL_LOGS: bool = False
+
     CORS_ORIGINS: list = ["*"]
     CORS_METHODS: list = ["*"]
     CORS_HEADERS: list = ["*"]
