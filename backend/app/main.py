@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.logger import log
 from app.core.config import settings
 from app.db.redis import redis_client
+from app.routes.auth import auth_router
 from app.routes.user import users_router
 from app.routes.status import status_router
 
@@ -31,6 +32,7 @@ app.add_middleware(
     allow_credentials=settings.CORS_CREDENTIALS,
 )
 
+app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(status_router)
 
