@@ -17,7 +17,7 @@ class AuthService(LogMixin):
 
     async def authenticate(self, email: str, password: str) -> User | None:
         user = await self.get_user_by_email(email)
-        if not user or not verify_password(password, user.password):
+        if not user or not user.password or not verify_password(password, user.password):
             return None
         self.log(f"User authenticated: {email}")
         return user
