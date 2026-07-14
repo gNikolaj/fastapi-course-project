@@ -59,3 +59,8 @@ class UsersList(BaseModel):
     total: int
     offset: int
     limit: int
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
