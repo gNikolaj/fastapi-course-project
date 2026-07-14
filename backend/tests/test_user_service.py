@@ -1,27 +1,26 @@
 import pytest
+from pydantic import ValidationError
 from unittest.mock import AsyncMock, MagicMock
 
 from app.services.user import UserService
 from app.services.auth import AuthService
-from app.schemas.user import SignUpRequest, UserUpdate
+from app.schemas.user import UserUpdate
 
 
 @pytest.mark.asyncio
 async def test_update_only_changes_provided_fields():
     existing = MagicMock()
-    existing.email = "old@gmail.com"
+    existing.name = "Old Name"
     existing.password = "old_hash"
-    existing.is_active = True
 
     service = UserService(AsyncMock())
     service.get_user_by_id = AsyncMock(return_value=existing)
     service.log = MagicMock()
 
-    result = await service.update_user(1, UserUpdate(email="new@gmail.com"))
+    result = await service.update_user(1, UserUpdate(name="New Name"))
 
-    assert result.email == "new@gmail.com"
+    assert result.name == "New Name"
     assert result.password == "old_hash"
-    assert result.is_active is True
 
 
 @pytest.mark.asyncio
@@ -44,14 +43,29 @@ async def test_update_missing_user_returns_none():
     service = UserService(AsyncMock())
     service.get_user_by_id = AsyncMock(return_value=None)
 
-    result = await service.update_user(999, UserUpdate(email="x@gmail.com"))
+    result = await service.update_user(999, UserUpdate(name="X"))
     assert result is None
+
+
+def test_user_update_rejects_email():
+    # email не входить у дозволені поля -> extra="forbid" має відхилити запит
+    with pytest.raises(ValidationError):
+        UserUpdate(email="new@gmail.com")
+
+
+def test_user_update_rejects_is_active():
+    with pytest.raises(ValidationError):
+        UserUpdate(is_active=False)
+
+
+def test_user_update_rejects_blank_name():
+    with pytest.raises(ValidationError):
+        UserUpdate(name="   ")
 
 
 @pytest.mark.asyncio
 async def test_authenticate_returns_none_for_wrong_password():
     from app.utils.password import hash_password
-    from unittest.mock import patch
 
     user = MagicMock()
     user.password = hash_password("correctpass")

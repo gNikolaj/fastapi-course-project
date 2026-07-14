@@ -40,12 +40,10 @@ class UserService(LogMixin):
         if not user:
             return None
 
-        if data.email is not None:
-            user.email = data.email
+        if data.name is not None:
+            user.name = data.name
         if data.password is not None:
             user.password = hash_password(data.password)
-        if data.is_active is not None:
-            user.is_active = data.is_active
 
         await self.db.commit()
         await self.db.refresh(user)

@@ -1,10 +1,11 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.utils.validators import validate_email
 
 
 class User(BaseModel):
     id: int
+    name: str | None = None
     email: str
     is_active: bool
 
@@ -33,20 +34,25 @@ class SignUpRequest(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    email: str | None = None
-    password: str | None = None
-    is_active: bool | None = None
+    model_config = ConfigDict(extra="forbid")
 
-    @field_validator("email")
+    name: str | None = None
+    password: str | None = None
+
+    @field_validator("name")
     @classmethod
-    def email_validator(cls, value: str | None) -> str | None:
+    def name_validator(cls, value: str | None) -> str | None:
         if value is None:
             return value
-        return validate_email(value)
+        value = value.strip()
+        if not value:
+            raise ValueError("Name cannot be empty")
+        return value
 
 
 class UserDetail(BaseModel):
     id: int
+    name: str | None = None
     email: str
     is_active: bool
 
