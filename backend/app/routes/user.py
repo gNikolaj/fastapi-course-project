@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.models.user import User
 from app.db.postgres import get_db
+from app.core.deps import get_current_user
 from app.services.user import UserService
 from app.schemas.user import SignUpRequest, UserUpdate, UserDetail, UsersList
 
@@ -45,9 +47,11 @@ async def update_user(
         user_id: int,
         data: UserUpdate,
         db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user),
 ):
-    service = UserService(db)
-    user = await service.update_user(user_id, data)
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can only edit your own profile")
+    user = await UserService(db).update_user(user_id, data)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
@@ -56,9 +60,11 @@ async def update_user(
 @users_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
         user_id: int,
+        current_user: User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db),
 ):
-    service = UserService(db)
-    user = await service.delete_user(user_id)
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can only delete your own profile")
+    user = await UserService(db).delete_user(user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
